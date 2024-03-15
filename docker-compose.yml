@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    restart: always
+    hostname: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:7.6.0
+    hostname: broker
+    ports:
+      - "5202:5202"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_EXTERNAL_PORT: 5202
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:25202,PLAINTEXT_HOST://localhost:5202
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+    depends_on:
+      - zookeeper
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    ports:
+      - "5201:8080"
+    depends_on:
+      - zookeeper
+      - broker
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=Local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker:25202
+  exam:
+    image: dogcer/test:productforexam
+    ports:
+      - "5200:80"
+    depends_on:
+      - zookeeper
+      - broker

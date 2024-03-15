@@ -1,0 +1,3 @@
+1. Mở CMD/Terminal trong thư mục này
+2. Chạy lệnh: docker compose up -d
+3. Sau khi chạy xong lệnh trên, truy cập http://localhost:5200‌/ để xem đề bài
